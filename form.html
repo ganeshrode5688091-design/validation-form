@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Validation Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        h1 { text-align: center; color: #333; }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        input.error {
+            border-color: #e74c3c;
+            background-color: #fadbd8;
+        }
+        .error-text {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 3px;
+            display: none;
+        }
+        .error-text.show { display: block; }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { opacity: 0.9; }
+        .success { color: #27ae60; text-align: center; display: none; margin-top: 10px; }
+        .success.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Form</h1>
+        <form id="form">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" required>
+                <div class="error-text">Name must be at least 3 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required>
+                <div class="error-text">Please enter a valid email</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="text" id="phone" required>
+                <div class="error-text">Phone must be 10 digits</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" required>
+                <div class="error-text">Password must be at least 6 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="country">Country *</label>
+                <select id="country" required>
+                    <option value="">Select Country</option>
+                    <option value="india">India</option>
+                    <option value="usa">USA</option>
+                    <option value="uk">UK</option>
+                </select>
+                <div class="error-text">Please select a country</div>
+            </div>
+            
+            <button type="submit">Submit</button>
+            <div class="success">✓ Form submitted successfully!</div>
+        </form>
+    </div>
 
+    <script>
+        const form = document.getElementById('form');
+        const fields = ['name', 'email', 'phone', 'password', 'country'];
+        
+        const validations = {
+            name: val => val.trim().length >= 3,
+            email: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+            phone: val => /^\d{10}$/.test(val.replace(/\D/g, '')),
+            password: val => val.length >= 6,
+            country: val => val !== ''
+        };
+        
+        fields.forEach(field => {
+            document.getElementById(field).addEventListener('blur', () => validateField(field));
+        });
+        
+        function validateField(field) {
+            const input = document.getElementById(field);
+            const error = input.nextElementSibling;
+            const isValid = validations[field](input.value);
+            
+            if (isValid) {
+                input.classList.remove('error');
+                error.classList.remove('show');
+            } else {
+                input.classList.add('error');
+                error.classList.add('show');
+            }
+            return isValid;
+        }
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let allValid = true;
+            
+            fields.forEach(field => {
+                if (!validateField(field)) allValid = false;
+            });
+            
+            if (allValid) {
+                document.querySelector('.success').classList.add('show');
+                form.style.display = 'none';
+                setTimeout(() => {
+                    form.reset();
+                    form.style.display = 'block';
+                    document.querySelector('.success').classList.remove('show');
+                    fields.forEach(f => document.getElementById(f).classList.remove('error'));
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
